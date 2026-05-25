@@ -5,17 +5,24 @@
 //  Created by somto on 2026-05-11.
 //
 import Foundation
+import SwiftData
 
-public struct Activity {
-    let id: UUID
-    public let name: String
-    public let description: String?
-    public let createdAt: Date
+@Model
+public final class Activity {
+    public var id: UUID
+    public var name: String
+    public var activityDescription: String?
+    public var createdAt: Date
     
-    init(id: UUID = UUID(), name: String, description: String? = nil, createdAt: Date = Date()) {
+    public init(
+        id: UUID = UUID(),
+        name: String,
+        activityDescription: String? = nil,
+        createdAt: Date = Date()
+    ) {
         self.id = id
         self.name = name
-        self.description = description
+        self.activityDescription = activityDescription
         self.createdAt = createdAt
     }
 }
