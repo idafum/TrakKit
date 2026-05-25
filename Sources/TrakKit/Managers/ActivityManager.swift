@@ -1,5 +1,5 @@
 //
-//  ActivityManager.swift
+//  SubjectManager.swift
 //  TrakKit
 //
 //  Created by somto on 2026-05-11.
@@ -7,12 +7,63 @@
 import SwiftData
 import Foundation
 
-public struct ActivityManager{
+public struct SubjectManager{
     private let modelContext: ModelContext //Manager usese modelContext to query swiftData
+
     
     public init (modelContext: ModelContext) {
         self.modelContext = modelContext
     }
+    
+    //SUBJECT NAME NORMALIZER
+    
+    //Create a new subject
+    /*
+     Rules:
+     1. Subject name cannot be empty
+     2. Subject name must be normalized
+     3. Subject names must be unique
+     4. Subject name must be >= 3 characters and <= 25 characters
+     */
+    
+    public func createSubject(name: String, description: String?, existingSubjects: [Subject]) throws -> Subject{
+        //trim data
+        var name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if var description = description {
+            description = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        
+        //continue if name is not empty
+        guard !name.isEmpty else {
+            throw SubjectError.emptyName
+        }
+        
+        //CONTINUE IF NAME IS > 3 AND < 25 CHARACTERS
+        guard name.count > 3 else {
+            throw SubjectError.nameTooShort
+        }
+        
+        guard name.count < 25 else {
+            throw SubjectError.nameTooLong
+        }
+        
+        //Create a subject
+        let newSubject = Subject(name: name, desc: description)
+        
+        
+        if existingSubjects.contains(where: { existingSubject in
+            newSubject.normalizedName == existingSubject.normalizedName
+        }){
+            throw SubjectError.subjectAlreadyExists
+        } else {
+            
+            //Add the newly created subject
+            modelContext.insert(newSubject)
+            return newSubject
+        }
+    }
+    
     
 //    /// Return a list of all activities
 //    public func getAllActivities() throws-> [Activity] {
